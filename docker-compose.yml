@@ -91,7 +91,7 @@ services:
     ports:
      - "44444:44444"
     volumes:
-     - ./flume-configs/kafka-sink.conf:/opt/flume-config/flume.conf
+     - ./flume-configs/custom-source.conf:/opt/flume-config/flume.conf
     environment:
     - FLUME_AGENT_NAME=docker-kafka
   hdfs-sink: # flume sink to hdfs
