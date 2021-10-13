@@ -10,8 +10,9 @@ from rasterio.plot import show
 from rasterio.mask import mask
 from osgeo import gdal
 
-#image = cv2.imread('g2.jp2')
-#cv2.imwrite('g2.png', image)
+#image0 = cv2.imread('NIR.jp2')
+
+#cv2.imwrite('nir.png', image0)
 
 def locationToPng(boundaryString):
     boundary = gpd.read_file(boundaryString)
@@ -37,9 +38,9 @@ def locationToPng(boundaryString):
 
 
 locationToPng('Resources/g1.geojson')
-locationToPng('Resources/g2.geojson')
-locationToPng('Resources/g3.geojson')
-locationToPng('Resources/g4.geojson')
-locationToPng('Resources/g5.geojson')
-locationToPng('Resources/g6.geojson')
+#locationToPng('Resources/g2.geojson')
+#locationToPng('Resources/g3.geojson')
+#locationToPng('Resources/g4.geojson')
+#locationToPng('Resources/g5.geojson')
+#locationToPng('Resources/g6.geojson')
 
