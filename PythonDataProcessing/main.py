@@ -3,12 +3,13 @@ import geopandas as gpd
 import rasterio as rasterio
 from sentinelsat.sentinel import SentinelAPI
 import rasterio
-import cv2
+#import cv2
 import matplotlib.pyplot as plt
 from rasterio import plot
 from rasterio.plot import show
 from rasterio.mask import mask
 from osgeo import gdal
+from zipfile import ZipFile
 
 #image = cv2.imread('g2.jp2')
 #cv2.imwrite('g2.png', image)
@@ -42,4 +43,9 @@ locationToPng('Resources/g3.geojson')
 locationToPng('Resources/g4.geojson')
 locationToPng('Resources/g5.geojson')
 locationToPng('Resources/g6.geojson')
+
+
+
+
+
 
