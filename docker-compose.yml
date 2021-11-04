@@ -16,8 +16,6 @@ services:
       - ./hadoop.env
     networks:
       docker-network:
-        ipv4_address: 172.202.0.12
-
   datanode1: #Hadoop Slave1
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode1
@@ -32,7 +30,6 @@ services:
       - ./hadoop.env
     networks:
       docker-network:
-        ipv4_address: 172.202.0.13
   spark-master: # Spark master node
     image: bde2020/spark-master:3.1.1-hadoop3.2
     container_name: spark-master
@@ -43,7 +40,6 @@ services:
       - INIT_DAEMON_STEP=setup_spark
     networks:
       docker-network:
-        ipv4_address: 172.202.0.9
   spark-worker-1: # Spark worker node
     image: bde2020/spark-worker:3.1.1-hadoop3.2
     container_name: spark-worker-1
@@ -55,7 +51,6 @@ services:
       - "SPARK_MASTER=spark://spark-master:7077"
     networks:
       docker-network:
-        ipv4_address: 172.202.0.10
   zookeeper: # Zookeeper
     image: confluentinc/cp-zookeeper:6.2.0
     ports:
@@ -109,9 +104,6 @@ services:
 networks:
   docker-network:
     name: hadoop
-    ipam: # might be unnecessary
-      config:
-        - subnet: 172.202.0.0/24
 volumes:
   hadoop_namenode:
     name: namenode_volume
