@@ -4,3 +4,4 @@ sentinelsat
 tempfile
 shutil
 happybase
+opencv-python
