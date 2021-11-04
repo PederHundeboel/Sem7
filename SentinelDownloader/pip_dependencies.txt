@@ -1,0 +1,6 @@
+kafka-python
+geopandas
+sentinelsat
+tempfile
+shutil
+happybase
