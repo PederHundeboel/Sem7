@@ -1,3 +1,15 @@
+
+const { Kafka } = require("kafkajs")
+
+const clientId = "app-api"
+
+const brokers = ["kafka:9092"]
+
+const topic = "message-log"
+
+
+
+const kafka = new Kafka({ clientId, brokers })
 const consumer = kafka.consumer({ groupId: clientId })
 
 const consume = async () => {
