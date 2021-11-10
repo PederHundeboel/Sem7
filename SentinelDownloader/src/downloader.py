@@ -13,9 +13,9 @@ import tempfile as tmp
 class Downloader:
     def __init__(self, user, pw, connection: happybase.Connection):
         self.api = SentinelAPI(user, pw, 'https://scihub.copernicus.eu/dhus')
-        self.dbconn = connection
-        self.raw_table = self.dbconn.table('sentinel-raw')
-        self.processed_table = self.dbconn.table('processed')
+        #self.dbconn = connection
+        #self.raw_table = self.dbconn.table('sentinel-raw')
+        #self.processed_table = self.dbconn.table('processed')
         self.dirpath = None
         self.bandpath = None
 
@@ -39,9 +39,9 @@ class Downloader:
 
         identifier = gdf_sorted.identifier[0]
 
-        if self.__check_key(identifier, self.processed_table):
+        if False: #self.__check_key(identifier, self.processed_table):
             print('Data for identifier ' + identifier + 'was already processed')
-        elif self.__check_key(identifier, self.raw_table):
+        elif False: #self.__check_key(identifier, self.raw_table):
             print()
         else:
             try:
@@ -70,7 +70,7 @@ class Downloader:
         nirData = nir.read()
         swir = open(self.dirpath + '/SWIR.jp2')
         swirData = swir.read()
-        self.raw_table.put(identifier, {'cf:nir_band': nirData, 'cf:swir_band': swirData})
+        #self.raw_table.put(identifier, {'cf:nir_band': nirData, 'cf:swir_band': swirData})
         self.__cleanup()
 
     def __check_key(self, identifier, table: happybase.Table):

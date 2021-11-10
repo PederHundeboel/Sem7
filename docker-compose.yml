@@ -16,8 +16,6 @@ services:
       - ./hadoop.env
     networks:
       docker-network:
-        ipv4_address: 172.202.0.12
-
   datanode1: #Hadoop Slave1
     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
     container_name: datanode1
@@ -32,7 +30,6 @@ services:
       - ./hadoop.env
     networks:
       docker-network:
-        ipv4_address: 172.202.0.13
   spark-master: # Spark master node
     image: bde2020/spark-master:3.1.1-hadoop3.2
     container_name: spark-master
@@ -43,7 +40,6 @@ services:
       - INIT_DAEMON_STEP=setup_spark
     networks:
       docker-network:
-        ipv4_address: 172.202.0.9
   spark-worker-1: # Spark worker node
     image: bde2020/spark-worker:3.1.1-hadoop3.2
     container_name: spark-worker-1
@@ -55,7 +51,6 @@ services:
       - "SPARK_MASTER=spark://spark-master:7077"
     networks:
       docker-network:
-        ipv4_address: 172.202.0.10
   zookeeper: # Zookeeper
     image: confluentinc/cp-zookeeper:6.2.0
     ports:
@@ -68,9 +63,14 @@ services:
     image: confluentinc/cp-kafka:6.2.0
     ports:
       - 9092:9092
+      - 9992:19092
     environment:
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS: 'true'
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_PARTITION_ASSIGNMENT_STRATEGY: org.apache.kafka.clients.consumer.RoundRobinAssignor
     volumes:
@@ -86,32 +86,17 @@ services:
     restart: always
     networks:
       docker-network:
-  custom-source: # flume custom source
-    image: probablyfine/flume
-    ports:
-     - "44444:44444"
-    volumes:
-     - ./flume-configs/custom-source.conf:/opt/flume-config/flume.conf
-    environment:
-    - FLUME_AGENT_NAME=docker-kafka
-  hdfs-sink: # flume sink to hdfs
-    image: probablyfine/flume
-    volumes:
-     - ./flume-configs/hdfs-sink.conf:/opt/flume-config/flume.conf
-    environment:
-    - FLUME_AGENT_NAME=docker-hdfs
-  kafka-sink: # flume sink to kafka
-    image: probablyfine/flume
-    volumes:
-     - ./flume-configs/kafka-sink.conf:/opt/flume-config/flume.conf
-    environment:
-    - FLUME_AGENT_NAME=docker-kafka
+  sentinel_downloader:
+    build: ./SentinelDownloader
+    depends_on:
+      - "kafka"
+    links:
+      - "kafka"
+    networks:
+     docker-network: 
 networks:
   docker-network:
     name: hadoop
-    ipam: # might be unnecessary
-      config:
-        - subnet: 172.202.0.0/24
 volumes:
   hadoop_namenode:
     name: namenode_volume
