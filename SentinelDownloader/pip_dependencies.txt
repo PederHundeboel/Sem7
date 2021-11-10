@@ -1,0 +1,5 @@
+kafka-python
+geopandas
+sentinelsat
+happybase
+opencv-python

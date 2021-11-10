@@ -63,9 +63,14 @@ services:
     image: confluentinc/cp-kafka:6.2.0
     ports:
       - 9092:9092
+      - 9992:19092
     environment:
+      KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_AUTO_CREATE_TOPICS: 'true'
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_PARTITION_ASSIGNMENT_STRATEGY: org.apache.kafka.clients.consumer.RoundRobinAssignor
     volumes:
@@ -81,6 +86,14 @@ services:
     restart: always
     networks:
       docker-network:
+  sentinel_downloader:
+    build: ./SentinelDownloader
+    depends_on:
+      - "kafka"
+    links:
+      - "kafka"
+    networks:
+     docker-network: 
 networks:
   docker-network:
     name: hadoop
