@@ -33,6 +33,26 @@ services:
     networks:
       docker-network:
       #  ipv4_address: 172.202.0.13
+  hbase:
+    image: bde2020/hbase-standalone:1.0.0-hbase1.2.6
+    container_name: hbase
+    volumes:
+      - hbase_data:/hbase-data
+      - hbase_zookeeper_data:/zookeeper-data
+    ports:
+      - 16000:16000
+      - 16010:16010
+      - 16020:16020
+      - 16030:16030
+      - 2888:2888
+      - 3888:3888
+      - 2181:2181
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hbase-standalone.env
+    networks:
+      docker-network:
   spark-master: # Spark master node
     image: bde2020/spark-master:3.1.1-hadoop3.2
     container_name: spark-master
@@ -56,14 +76,14 @@ services:
     networks:
       docker-network:
        # ipv4_address: 172.202.0.10
-  zookeeper: # Zookeeper
-    image: confluentinc/cp-zookeeper:6.2.0
-    ports:
-      - 2181:2181
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-    networks:
-      docker-network:
+  #zookeeper: # Zookeeper
+  #  image: confluentinc/cp-zookeeper:6.2.0
+  #  ports:
+  #    - 2181:2181
+  #  environment:
+  #    ZOOKEEPER_CLIENT_PORT: 2181
+  #  networks:
+  #    docker-network:
   kafka:
     hostname: kafka
     container_name: kafka
@@ -71,7 +91,7 @@ services:
     ports:
       - 9092:9092
     environment:
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ZOOKEEPER_CONNECT: hbase:2181 #zookeeper:2181
       #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       #KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://kafka19092
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
@@ -134,7 +154,7 @@ services:
     #hostname: schema-registry
     container_name: schema-registry
     depends_on:
-      - zookeeper
+      - hbase #zookeeper
       - kafka
     ports:
       - '8082:8082'
@@ -189,3 +209,7 @@ volumes:
     name: datanode1_volume
   confluent_kafka:
     name: kafka_volume
+  hbase_data:
+    name: hbase_data
+  hbase_zookeeper_data:
+    name: hbase_zookeeper_data
