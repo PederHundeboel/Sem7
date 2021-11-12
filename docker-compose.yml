@@ -40,18 +40,10 @@ services:
     volumes:
       - hbase_data:/hbase-data
       - hbase_zookeeper_data:/zookeeper-data
-    env_file:
-      - ./hbase-distributed-local.env
-    environment:
-      SERVICE_PRECONDITION: "namenode:9870 datanode1:9864 zookeeper:2181"
-    ports:
-      - 16000:16000
-
-     # - 2181:2181
     environment:
       SERVICE_PRECONDITION: "namenode:9870"
     env_file:
-      - ./hbase-standalone.env
+      - ./hbase-distributed.env
     networks:
       docker-network:
   spark-master: # Spark master node
@@ -123,6 +115,7 @@ services:
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: 'http://schema-registry:8082'
       CONNECT_INTERNAL_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
       CONNECT_INTERNAL_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "true"
       CONNECT_REST_ADVERTISED_HOST_NAME: "kafka-connect"
       CONNECT_LOG4J_ROOT_LOGLEVEL: "INFO"
       CONNECT_LOG4J_LOGGERS: "org.apache.kafka.connect.runtime.rest=WARN,org.reflections=ERROR"
