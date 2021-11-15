@@ -26,16 +26,16 @@
 ###################################################################
 kafka:
   brokers:
-    - kafka:19092
+    - "kafka:19092"
   schemaRegistry:
     enabled: true
-    urls: [http://schema-registry:8082]
+    urls: ["http://schema-registry:8082"]
     tls: 
       enabled: false 
 connect: 
   enabled: true
   clusters:
-    - name: kafka-connect 
-      url: http://kafka-connect:8083
+    - name: "kafka-connect"
+      url: "http://kafka-connect:8083"
       tls: 
-        enabled: false 
+        enabled: false

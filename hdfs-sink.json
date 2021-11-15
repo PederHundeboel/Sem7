@@ -3,7 +3,7 @@
   "config": {
     "connector.class": "io.confluent.connect.hdfs3.Hdfs3SinkConnector",
     "tasks.max": "1",
-    "topics": "my_topic",
+    "topics": "products",
     "hdfs.url": "hdfs://namenode:9000",
     "flush.size": "3",
     "key.converter": "org.apache.kafka.connect.storage.StringConverter",
