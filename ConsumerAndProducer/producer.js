@@ -3,9 +3,9 @@ const { Kafka } = require("kafkajs")
 
 const clientId = "app-api"
 
-const brokers = ["kafka:9092"]
+const brokers = ["localhost:9092"]
 
-const topic = "message-log"
+const topic = "download"
 
 
 
@@ -27,7 +27,7 @@ const produce = async () => {
 				messages: [
 					{
 						key: String(i),
-						value: "this is message " + i,
+						value: "Here is the data " + i,
 					},
 				],
 			})

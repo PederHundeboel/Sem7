@@ -3,9 +3,9 @@ const { Kafka } = require("kafkajs")
 
 const clientId = "app-api"
 
-const brokers = ["kafka:9092"]
+const brokers = ["localhost:9092"]
 
-const topic = "message-log"
+const topic = "found"
 
 
 
@@ -20,13 +20,11 @@ const consume = async () => {
 
         eachMessage: ({ message }) => {
 
-            console.log(`data received: ${message.value}`)
+            console.log(`Data received: ${message.value}`)
 		},
 	})
 }
 
 
 
-consume().catch((err) => {
-	console.error("error in consumer: ", err)
-})
+module.exports = consume

@@ -1,5 +1,5 @@
-const produce = require("./produce")
-const consume = require("./consume")
+const produce = require("./producer")
+const consume = require("./consumer")
 
 // call the `produce` function and log an error if it occurs
 produce().catch((err) => {
