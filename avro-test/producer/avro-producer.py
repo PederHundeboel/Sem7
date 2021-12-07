@@ -2,6 +2,8 @@ from time import sleep
 
 from confluent_kafka import avro
 from confluent_kafka.avro import AvroProducer
+import uuid
+
 
 value_schema = avro.load('/usr/src/app/schema/ValueSchema.avsc')
 key_schema = avro.load('/usr/src/app/schema/KeySchema.avsc')
@@ -15,9 +17,75 @@ avroProducer = AvroProducer(
     )
 
 for i in range(0, 20):
+    key = uuid.uuid4().hex
     #value = {"name": "nguyen", "favorite_number": 10, "favorite_color": "green", "age": i}
-    avroProducer.produce(topic='products', value=value2, key={"name": str(i)}, key_schema=key_schema, value_schema=value_schema)
+    #avroProducer.produce(topic='products', value=value2, key={"name": str(i)}, key_schema=key_schema, value_schema=value_schema)
+    avroProducer.produce(topic='products', value=value2, key={"name": key}, key_schema=key_schema, value_schema=value_schema)
     sleep(0.01)
     print(i)
 
 avroProducer.flush(10)
+
+'''
+{
+    "name": "MyClass",
+    "type": "record",
+    "namespace": "com.acme.avro",
+    "fields": [
+      {
+        "name": "type",
+        "type": "string"
+      },
+      {
+        "name": "features",
+        "type": {
+          "type": "array",
+          "items": {
+            "name": "features_record",
+            "type": "record",
+            "fields": [
+              {
+                "name": "type",
+                "type": "string"
+              },
+              {
+                "name": "properties",
+                "type": {
+                  "name": "properties",
+                  "type": "record",
+                  "fields": []
+                }
+              },
+              {
+                "name": "geometry",
+                "type": {
+                  "name": "geometry",
+                  "type": "record",
+                  "fields": [
+                    {
+                      "name": "type",
+                      "type": "string"
+                    },
+                    {
+                      "name": "coordinates",
+                      "type": {
+                        "type": "array",
+                        "items": {
+                          "type": "array",
+                          "items": {
+                            "type": "array",
+                            "items": "float"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+'''
