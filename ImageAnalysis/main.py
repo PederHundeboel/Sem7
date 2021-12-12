@@ -15,6 +15,10 @@ from shapely.geometry import Polygon
 from shapely_geojson import dumps, Feature, FeatureCollection
 from shapely_geojson import dump as featureDump
 from matplotlib.colors import ListedColormap
+from pyproj import Proj, transform
+import pyproj
+import jp2helper
+import utm
 
 import plotly.graph_objects as go
 
@@ -91,19 +95,48 @@ src = osr.SpatialReference()
 src.SetWellKnownGeogCS("WGS84")
 dataset = gdal.Open("T32UMG_20210716T103629_B03_20m.jp2")
 GT = dataset.GetGeoTransform()
-dataset2 = gdal.Open("T32UMG_20210716T103629_B02_10m.jp2")
-GT2 = dataset2.GetGeoTransform()
+projection = dataset.GetProjection()
+dst = osr.SpatialReference(projection)
+ct = osr.CoordinateTransformation(src, dst)
+xy = ct.TransformPoint(minx, maxy);
+print(ct)
+
+coord1 = (minx, maxy)
+z, l, x, y = jp2helper.project(coord1)
+
+zoneinfo = utm.from_latlon(maxy, minx)
+
+is_northern = True
+
+if maxy > 0:
+    is_northern = True
+else:
+    is_northern = False
+
+
+#dataset2 = gdal.Open("boca.jp2")
+#GT2 = dataset2.GetGeoTransform()
 
 present_img = cv2.drawContours(ref_img, contours, -1, (0,255,0), 3)
 
-#plt.imshow(present_img)
+plt.imshow(present_img)
 
-#plt.show()
+plt.show()
 tmpvalyes = contours[1][0][0][0]
 print(tmpvalyes)
 
 pixelLatLongVal = 0.00018000018
 feature_list = []
+
+#inProj = Proj('epsg:3857')
+#outProj = Proj('epsg:4326')
+#x2,y2 = transform(inProj,outProj,GT[0],GT[3])
+
+proj = pyproj.Transformer.from_crs(3857, 4326, always_xy=True)
+
+
+x2, y2 = proj.transform(GT[0],GT[3])
+
 
 for i, contour in enumerate(contours):
     points = []
@@ -111,13 +144,14 @@ for i, contour in enumerate(contours):
         if i != 0 and len(contour) > 2 :
             pX = contours[i][j][0][0]
             pY = contours[i][j][0][1]
-
             latX = minx + (pX*pixelLatLongVal)
-            x_geo = (GT[0] + (pX * GT[1]) + (pY * GT[2]))/100000
-            y_geo = (GT[3] + (pX * GT[4]) + (pY * GT[5]))/100000
+            x_geo = (GT[0] + ((pX+0.5) * GT[1]) + (pY * GT[2]))#/100000
+            y_geo = (GT[3] + ((pX+0.5) * GT[4]) + (pY * GT[5]))#/100000
+            tmpshit = utm.to_latlon(x_geo, y_geo, zoneinfo[2], zone_letter=zoneinfo[3])
             lonY = maxy - (pY*pixelLatLongVal)
-            print('x: ' + str(x_geo) + '\t y: ' + str(y_geo))
-            points.append((x_geo, y_geo))
+            lng, lat = jp2helper.unproject(z, 'U', x_geo, y_geo)
+            print('x: ' + str(tmpshit[0]) + '\t y: ' + str(tmpshit[1]))
+            points.append((tmpshit[1], tmpshit[0]))
     feature_list.append(Polygon(points))
 
 #p1 = Polygon([(1,20),(7,4),(4,3),(7,20)])
@@ -134,7 +168,8 @@ with open('shapers.json', 'w') as outfile:
     featureDump(fcol, outfile)
 
 print("")
-print(GT[0]/100000)
-print(GT[3]/100000)
+print(GT[0])
+print(GT[3])
+print((x2, y2))
 
 
