@@ -12,7 +12,7 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from shapely.geometry import Polygon
-from shapely_geojson import dumps, Feature, FeatureCollection
+from shapely_geojson import dumps, FeatureCollection
 from shapely_geojson import dump as featureDump
 from matplotlib.colors import ListedColormap
 from pyproj import Proj, transform
@@ -67,13 +67,6 @@ for i in S_sentinel_bands:
 
 arr_st = np.stack(l)
 
-#ep.plot_bands(arr_st,
-#              cmap = 'gist_earth',
-#              figsize = (20, 12),
-#              cols = 6,
-#              cbar = False)
-#plt.show()
-
 NIR = arr_st[0]
 SWIR1 = arr_st[1]
 
@@ -87,89 +80,42 @@ imgGry = cv2.cvtColor(img_blur_img, cv2.COLOR_BGR2GRAY)
 ret, thrash = cv2.threshold(imgGry, 17, 255, cv2.THRESH_BINARY)
 contours, hierarchy = cv2.findContours(thrash, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-#ep.plot_bands(thrash, cmap="RdYlGn", cols=1, vmin=-1, vmax=255, figsize=(10, 14))
-
 ref_img = cv2.imread('Bands/NIR_B08_10m.jp2')
 
-src = osr.SpatialReference()
-src.SetWellKnownGeogCS("WGS84")
 dataset = gdal.Open("T32UMG_20210716T103629_B03_20m.jp2")
-GT = dataset.GetGeoTransform()
-projection = dataset.GetProjection()
-dst = osr.SpatialReference(projection)
-ct = osr.CoordinateTransformation(src, dst)
-xy = ct.TransformPoint(minx, maxy);
-print(ct)
-
-coord1 = (minx, maxy)
-z, l, x, y = jp2helper.project(coord1)
-
-zoneinfo = utm.from_latlon(maxy, minx)
-
-is_northern = True
-
-if maxy > 0:
-    is_northern = True
-else:
-    is_northern = False
+imageGeoTrans = dataset.GetGeoTransform()
 
 
-#dataset2 = gdal.Open("boca.jp2")
-#GT2 = dataset2.GetGeoTransform()
+utm_zone_info = utm.from_latlon(maxy, minx)
 
 present_img = cv2.drawContours(ref_img, contours, -1, (0,255,0), 3)
 
 plt.imshow(present_img)
 
 plt.show()
-tmpvalyes = contours[1][0][0][0]
-print(tmpvalyes)
 
-pixelLatLongVal = 0.00018000018
 feature_list = []
-
-#inProj = Proj('epsg:3857')
-#outProj = Proj('epsg:4326')
-#x2,y2 = transform(inProj,outProj,GT[0],GT[3])
-
-proj = pyproj.Transformer.from_crs(3857, 4326, always_xy=True)
-
-
-x2, y2 = proj.transform(GT[0],GT[3])
 
 
 for i, contour in enumerate(contours):
     points = []
     for j, point in enumerate(contour):
         if i != 0 and len(contour) > 2 :
+            #Pixel offsets
             pX = contours[i][j][0][0]
             pY = contours[i][j][0][1]
-            latX = minx + (pX*pixelLatLongVal)
-            x_geo = (GT[0] + ((pX+0.5) * GT[1]) + (pY * GT[2]))#/100000
-            y_geo = (GT[3] + ((pX+0.5) * GT[4]) + (pY * GT[5]))#/100000
-            tmpshit = utm.to_latlon(x_geo, y_geo, zoneinfo[2], zone_letter=zoneinfo[3])
-            lonY = maxy - (pY*pixelLatLongVal)
-            lng, lat = jp2helper.unproject(z, 'U', x_geo, y_geo)
-            print('x: ' + str(tmpshit[0]) + '\t y: ' + str(tmpshit[1]))
-            points.append((tmpshit[1], tmpshit[0]))
+            #Calculate utm position based on pixel offsets
+            x_utm = (imageGeoTrans[0] + ((pX + 0.5) * imageGeoTrans[1]) + (pY * imageGeoTrans[2]))
+            y_utm = (imageGeoTrans[3] + ((pX + 0.5) * imageGeoTrans[4]) + (pY * imageGeoTrans[5]))
+            #Project calculated utm position to LatLon
+            projectedLatLon = utm.to_latlon(x_utm, y_utm, utm_zone_info[2], zone_letter=utm_zone_info[3])
+            points.append((projectedLatLon[1], projectedLatLon[0]))
     feature_list.append(Polygon(points))
 
-#p1 = Polygon([(1,20),(7,4),(4,3),(7,20)])
-#p2 = Polygon([(11,10),(17,14),(14,13),(17,10)])
-#print(p1.area)
-#f1 = Feature(p1, {'index': 1})
-#f2 = Feature(p2, {'index': 2})
-#features = [f1, f2]
 fcol = FeatureCollection(feature_list)
-shapeString = dumps(fcol)
-print(shapeString)
 
 with open('shapers.json', 'w') as outfile:
     featureDump(fcol, outfile)
 
-print("")
-print(GT[0])
-print(GT[3])
-print((x2, y2))
 
 
