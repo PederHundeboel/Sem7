@@ -1,0 +1,26 @@
+{
+    "name": "MyClass",
+    "type": "record",
+    "namespace": "com.acme.avro",
+    "fields": [
+        {
+            "name": "coordinates",
+            "type": {
+                "type": "array",
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": "float"
+                    }
+                }
+            }
+        }
+    ]
+}
+
+bytestring result of row
+{b'products:coordinates': b'[[[9.435368,56.146793],[9.473991,56.146793],[9.473991,56.16075],[9.435368,56.16075],[9.435368,56.146793]]]'}
+
+key(b'products:coordinates') result 
+[[[9.435368,56.146793],[9.473991,56.146793],[9.473991,56.16075],[9.435368,56.16075],[9.435368,56.146793]]]
