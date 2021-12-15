@@ -1,0 +1,10 @@
+{
+	"name": "shapes",
+	"type": "record",
+	"fields": [
+		{
+			"name": "geojson",
+			"type": "string"
+		}
+	]
+}

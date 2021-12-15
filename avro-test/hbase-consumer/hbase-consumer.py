@@ -12,22 +12,18 @@ try:
 
     #print(connection.tables())
     table = connection.table('products-avro')
-    row = table.row('adf7c8d7c7ea45a5aa6be354a8f13d61')
+    row = table.row('1e47823319d442ecb3182f7fb9366bd0')
     #print(row)
 
-    coordinates = json.dumps(row[b'products:features'])
-    print(coordinates)
+    coordinates = row[b'products:geojson'].decode("utf-8")
+    #print(coordinates)
 
-    id = row[b'products:id'].decode("utf-8")
-    print(id)
-    #print(row[b'products:shape'])  # prints 'value1'
-    #for key, data in table.scan():
-    #    print(key, data)
+    with open('test.json', 'w') as f:
+        f.write(coordinates)
 
+    #id = row[b'products:id'].decode("utf-8")
+    #print(id)
 
-    # test
-    #df = pdh.read_hbase(connection, 'products-avro', '', cf=b'dimensions:dimensions1')
-    #print(df)
 finally:
     if connection:
         connection.close()

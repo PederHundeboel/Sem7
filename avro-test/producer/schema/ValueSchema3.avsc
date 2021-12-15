@@ -1,26 +1,82 @@
 {
-    "name": "MyClass",
-    "type": "record",
-    "namespace": "com.acme.avro",
-    "fields": [
-        {
-            "name": "coordinates",
-            "type": {
-                "type": "array",
-                "items": {
-                    "type": "array",
-                    "items": {
+  "name": "MyClass",
+  "type": "record",
+  "namespace": "com.acme.avro",
+  "fields": [
+    {
+      "name": "type",
+      "type": "string"
+    },
+    {
+      "name": "features",
+      "type": {
+        "type": "array",
+        "items": {
+          "name": "features_record",
+          "type": "record",
+          "fields": [
+            {
+              "name": "type",
+              "type": "string"
+            },
+            {
+              "name": "geometry",
+              "type": {
+                "name": "geometry",
+                "type": "record",
+                "fields": [
+                  {
+                    "name": "type",
+                    "type": "string"
+                  },
+                  {
+                    "name": "coordinates",
+                    "type": {
+                      "type": "array",
+                      "items": {
                         "type": "array",
-                        "items": "float"
+                        "items": {
+                          "type": "array",
+                          "items": "float"
+                        }
+                      }
                     }
-                }
+                  }
+                ]
+              }
+            },
+            {
+              "name": "properties",
+              "type": {
+                "name": "properties",
+                "type": "record",
+                "fields": [
+                  {
+                    "name": "stroke",
+                    "type": "string"
+                  },
+                  {
+                    "name": "stroke-width",
+                    "type": "int"
+                  },
+                  {
+                    "name": "stroke-opacity",
+                    "type": "int"
+                  },
+                  {
+                    "name": "fill",
+                    "type": "string"
+                  },
+                  {
+                    "name": "fill-opacity",
+                    "type": "float"
+                  }
+                ]
+              }
             }
+          ]
         }
-    ]
+      }
+    }
+  ]
 }
-
-bytestring result of row
-{b'products:coordinates': b'[[[9.435368,56.146793],[9.473991,56.146793],[9.473991,56.16075],[9.435368,56.16075],[9.435368,56.146793]]]'}
-
-key(b'products:coordinates') result 
-[[[9.435368,56.146793],[9.473991,56.146793],[9.473991,56.16075],[9.435368,56.16075],[9.435368,56.146793]]]

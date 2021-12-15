@@ -91,6 +91,11 @@ services:
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_PARTITION_ASSIGNMENT_STRATEGY: org.apache.kafka.clients.consumer.RoundRobinAssignor
+      KAFKA_MESSAGE_MAX_BYTES: 15728640 # set message.max.bytes to 15MB
+      KAFKA_MAX_REQUEST_SIZE: 15728640 # set max.request.size to 15MB
+      KAFKA_PRODUCER_MAX_REQUEST_SIZE: 15728640 # set producer max.request.size to 15MB
+      CONNECT_PRODUCER_MAX_REQUEST_SIZE: 15728640 # set producer max.request.size to 15MB
+
     volumes:
       - confluent_kafka:/var/lib/kafka/data
     networks:
