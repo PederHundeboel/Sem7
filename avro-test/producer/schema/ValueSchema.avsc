@@ -1,64 +1,22 @@
 {
-	"name": "myMetric",
+	"name": "shapes",
 	"type": "record",
 	"fields": [
 		{
-			"name": "name",
+			"name": "id",
+			"type": ["null", "string"]
+		},
+		{
+			"name": "bounds",
+			"type": ["null", "string"]
+		},
+		{
+			"name": "location",
+			"type": ["null", "string"]
+		},
+		{
+			"name": "geojson",
 			"type": "string"
-		},
-		{
-			"name": "type",
-			"type": "string"
-		},
-		{
-			"name": "timestamp",
-			"type": "long"
-		},
-		{
-			"name": "dimensions",
-			"type": {
-				"name": "dimensions",
-				"type": "record",
-				"fields": [
-					{
-						"name": "dimensions1",
-						"type": "string"
-					},
-					{
-						"name": "dimensions2",
-						"type": "string"
-					}
-				]
-			}
-		},
-		{
-			"name": "values",
-			"type": {
-				"name": "values",
-				"type": "record",
-				"fields": [
-					{
-						"name": "count",
-						"type": "double"
-					},
-					{
-						"name": "oneMinuteRate",
-						"type": "double"
-					},
-					{
-						"name": "fiveMinuteRate",
-						"type": "double"
-					},
-					{
-						"name": "fifteenMinuteRate",
-						"type": "double"
-					},
-					{
-						"name": "meanRate",
-						"type": "double"
-					}
-				]
-			}
 		}
 	]
 }
